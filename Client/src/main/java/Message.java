@@ -15,6 +15,17 @@ public class Message {
         this.message = message;
     }
 
+    public Message(String fromid, String toid, String message){
+        this.fromid = fromid;
+        this.toid = toid;
+        this.message = message;
+    }
+
+    public Message(String message){
+        this.message = message;
+    }
+
+
     public Message(){
 
     }
@@ -58,4 +69,5 @@ public class Message {
     public void setMessage(String message) {
         this.message = message;
     }
+
 }

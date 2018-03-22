@@ -1,3 +1,5 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,9 +10,17 @@ import java.util.List;
 public class SimpleShell {
 
 
+
     public static void prettyPrint(String output) {
-        // yep, make an effort to format things nicely, eh?
-        System.out.println(output);
+        ObjectMapper pretty = new ObjectMapper();
+        try {
+            Object json = pretty.readValue(output, Object.class);
+            String prettyString = pretty.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+            // yep, make an effort to format things nicely, eh?
+            System.out.println(prettyString);
+        } catch(IOException io){
+            io.printStackTrace();
+        }
     }
     public static void main(String[] args) throws java.io.IOException {
 
@@ -19,6 +29,7 @@ public class SimpleShell {
         BufferedReader console = new BufferedReader
                 (new InputStreamReader(System.in));
 
+        ObjectMapper objMap = new ObjectMapper();
         ProcessBuilder pb = new ProcessBuilder();
         List<String> history = new ArrayList<String>();
         int index = 0;
@@ -59,19 +70,37 @@ public class SimpleShell {
                 // Specific Commands.
 
                 // ids
-                if (list.contains("ids")) {
+                if (list.contains("ids") && list.size() == 1) {
                     String results = webber.get_ids();
                     SimpleShell.prettyPrint(results);
                     continue;
                 }
 
                 // messages
-                if (list.contains("messages")) {
+                if (list.contains("messages") && list.size() == 1) {
                     String results = webber.get_messages();
                     SimpleShell.prettyPrint(results);
                     continue;
                 }
                 // you need to add a bunch more.
+                if(list.contains("ids") && list.size() == 3){
+                    String name = list.get(1);
+                    String githubId = list.get(2);
+                    Id newId = new Id(name, githubId);
+                    String idInfo = objMap.writeValueAsString(newId);
+                    webber.MakeURLCall("/ids", "POST", idInfo);
+                    continue;
+                }
+
+
+                if(list.contains("messages") && list.size() == 2){
+                    String result = webber.MakeURLCall("/ids/" + list.get(1) + "/messages", "GET", "");
+                    SimpleShell.prettyPrint(result);
+                    continue;
+                }
+
+                String lastWord = list.get(list.size() - 1);
+
 
                 //!! command returns the last command in history
                 if (list.get(list.size() - 1).equals("!!")) {

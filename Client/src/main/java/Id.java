@@ -8,7 +8,6 @@ public class Id {
         this.userid = userid;
         this.name = name;
         this.github = github;
-
     }
 
     public Id(String name, String github){
@@ -42,6 +41,6 @@ public class Id {
 
     @Override
     public String toString(){
-        return "User ID: " + this.userid + "Name: " + this.name +  "GitHub: " + this.github;
+        return "User ID: " + this.userid + "Name: " + this.name +  "GitHub: " + this.github + "\n";
     }
 }
