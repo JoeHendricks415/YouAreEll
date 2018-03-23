@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
@@ -99,8 +100,50 @@ public class SimpleShell {
                     continue;
                 }
 
-                String lastWord = list.get(list.size() - 1);
 
+                if(list.contains("send")){
+                    ObjectMapper objMapper = new ObjectMapper();
+                    YouAreEll urlhandler = new YouAreEll();
+
+                    String groupedMessage = "";
+
+                    if(list.get(list.size() - 2).equals("to")){
+
+                        for(int i = 2; i < list.size() - 2; i++){
+                            groupedMessage += list.get(i) + " ";
+                        }
+
+                        String resultWithTo = groupedMessage.trim();
+                        Message messageTest = new Message(list.get(1), list.get(list.size() - 1), resultWithTo);
+
+                        try {
+                            String message = objMapper.writeValueAsString(messageTest);
+                            urlhandler.MakeURLCall("/ids/" + list.get(1) + "/messages", "POST", message);
+                        } catch(JsonProcessingException jpe){
+                            System.out.println(jpe.getMessage());
+                        }
+                    }
+                    else
+                    {
+
+                        for(int i = 2; i < list.size(); i++){
+                            groupedMessage += list.get(i) + " ";
+                        }
+
+                        String resultWithoutTo = groupedMessage.trim();
+                        Message messageTest = new Message(list.get(1),resultWithoutTo);
+
+                        try {
+                            String message = objMapper.writeValueAsString(messageTest);
+                            urlhandler.MakeURLCall("/ids/" + list.get(1) + "/messages", "POST", message);
+                        } catch(JsonProcessingException jpe){
+                            System.out.println(jpe.getMessage());
+                        }
+                    }
+                    String showResults = webber.get_messages();
+                    SimpleShell.prettyPrint(showResults);
+                    continue;
+                }
 
                 //!! command returns the last command in history
                 if (list.get(list.size() - 1).equals("!!")) {

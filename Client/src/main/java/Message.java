@@ -21,7 +21,8 @@ public class Message {
         this.message = message;
     }
 
-    public Message(String message){
+    public Message(String fromid, String message){
+        this.fromid = fromid;
         this.message = message;
     }
 
